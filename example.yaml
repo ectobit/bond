@@ -1,0 +1,18 @@
+apiVersion: bond.ectobit.com/v1alpha1
+kind: Source
+metadata:
+  name: example-source
+spec:
+  secrets:
+    - name: example-secret
+      destinations:
+        - namespace: test1
+        - namespace: test2
+---
+apiVersion: v1
+data:
+  secret: YWFhCg==
+kind: Secret
+metadata:
+  name: example-secret
+type: Opaque
