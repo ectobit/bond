@@ -6,7 +6,7 @@ RUN cargo install cargo-strip
 
 COPY . /app
 
-RUN cargo build --release --all-features && cargo strip
+RUN cargo build --release && cargo strip
 
 FROM gcr.io/distroless/cc-debian11
 
