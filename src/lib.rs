@@ -109,24 +109,26 @@ impl Client {
 }
 
 /// Controller triggers this whenever our main object or our children changed
-async fn reconcile_source(source: Source, ctx: Context<Data>) -> Result<ReconcilerAction, Error> {
+async fn reconcile_source(
+    source: Arc<Source>,
+    ctx: Context<Data>,
+) -> Result<ReconcilerAction, Error> {
     match determine_action(&source) {
         Action::Create => {
-            for s in source.spec.secrets {
+            for s in &source.spec.secrets {
                 let src_name = format!("{}/{}", source.metadata.namespace.clone().unwrap(), s.name);
 
                 if ctx.get_ref().state.read().await.contains_key(&src_name) {
                     continue;
                 }
 
-                let dst_names: Vec<String> = s
-                    .destinations
-                    .into_iter()
+                let dst_names: Vec<String> = (&s.destinations)
+                    .iter()
                     .map(|d| {
                         format!(
                             "{}/{}",
                             d.namespace,
-                            d.name.or_else(|| Some(s.name.clone())).unwrap()
+                            d.name.as_ref().or(Some(&s.name)).unwrap()
                         )
                     })
                     .collect();
@@ -176,7 +178,7 @@ async fn reconcile_source(source: Source, ctx: Context<Data>) -> Result<Reconcil
             let patch: Patch<&Value> = Patch::Merge(&finalizer);
             if let Err(e) = sources
                 .patch(
-                    &source.metadata.name.unwrap(),
+                    source.metadata.name.as_ref().unwrap(),
                     &PatchParams::default(),
                     &patch,
                 )
@@ -207,7 +209,10 @@ async fn reconcile_source(source: Source, ctx: Context<Data>) -> Result<Reconcil
 }
 
 /// Controller triggers this whenever our main object or our children changed
-async fn reconcile_secret(secret: Secret, ctx: Context<Data>) -> Result<ReconcilerAction, Error> {
+async fn reconcile_secret(
+    secret: Arc<Secret>,
+    ctx: Context<Data>,
+) -> Result<ReconcilerAction, Error> {
     let src_name = format!(
         "{}/{}",
         secret.metadata.namespace.clone().unwrap(),
