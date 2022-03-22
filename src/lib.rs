@@ -5,7 +5,7 @@ use k8s_openapi::{api::core::v1::Secret, apimachinery::pkg::apis::meta::v1::Obje
 use kube::api::PostParams;
 use kube::{
     api::{Api, ListParams, Patch, PatchParams, Resource},
-    runtime::controller::{Context, Controller, ReconcilerAction},
+    runtime::controller::{Action, Context, Controller},
     CustomResource,
 };
 use log::{debug, error, info, warn};
@@ -109,12 +109,9 @@ impl Client {
 }
 
 /// Controller triggers this whenever our main object or our children changed
-async fn reconcile_source(
-    source: Arc<Source>,
-    ctx: Context<Data>,
-) -> Result<ReconcilerAction, Error> {
+async fn reconcile_source(source: Arc<Source>, ctx: Context<Data>) -> Result<Action, Error> {
     match determine_action(&source) {
-        Action::Create => {
+        BondAction::Create => {
             for s in &source.spec.secrets {
                 let src_name = format!("{}/{}", source.metadata.namespace.clone().unwrap(), s.name);
 
@@ -189,30 +186,21 @@ async fn reconcile_source(
 
             info!("source reconciled!");
 
-            Ok(ReconcilerAction {
-                requeue_after: Some(Duration::from_secs(300)),
-            })
+            Ok(Action::requeue(Duration::from_secs(300)))
         }
-        Action::Delete => {
+        BondAction::Delete => {
             info!(">>>>>>>>>>>> DELETE");
-            Ok(ReconcilerAction {
-                requeue_after: Some(Duration::from_secs(300)),
-            })
+            Ok(Action::requeue(Duration::from_secs(300)))
         }
-        Action::NoOp => {
+        BondAction::NoOp => {
             info!(">>>>>>>>>>>> NOOP");
-            Ok(ReconcilerAction {
-                requeue_after: Some(Duration::from_secs(300)),
-            })
+            Ok(Action::requeue(Duration::from_secs(300)))
         }
     }
 }
 
 /// Controller triggers this whenever our main object or our children changed
-async fn reconcile_secret(
-    secret: Arc<Secret>,
-    ctx: Context<Data>,
-) -> Result<ReconcilerAction, Error> {
+async fn reconcile_secret(secret: Arc<Secret>, ctx: Context<Data>) -> Result<Action, Error> {
     let src_name = format!(
         "{}/{}",
         secret.metadata.namespace.clone().unwrap(),
@@ -247,31 +235,27 @@ async fn reconcile_secret(
         }
     }
 
-    Ok(ReconcilerAction {
-        requeue_after: Some(Duration::from_secs(300)),
-    })
+    Ok(Action::requeue(Duration::from_secs(300)))
 }
 
 /// The controller triggers this on reconcile errors
-fn error_policy(_error: &Error, _ctx: Context<Data>) -> ReconcilerAction {
-    ReconcilerAction {
-        requeue_after: Some(Duration::from_secs(60)),
-    }
+fn error_policy(_error: &Error, _ctx: Context<Data>) -> Action {
+    Action::requeue(Duration::from_secs(60))
 }
 
-enum Action {
+enum BondAction {
     Create,
     Delete,
     NoOp,
 }
 
-fn determine_action(source: &Source) -> Action {
+fn determine_action(source: &Source) -> BondAction {
     return if source.meta().deletion_timestamp.is_some() {
-        Action::Delete
+        BondAction::Delete
     } else if source.meta().finalizers.is_none() {
-        Action::Create
+        BondAction::Create
     } else {
-        Action::NoOp
+        BondAction::NoOp
     };
 }
 
