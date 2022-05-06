@@ -73,7 +73,7 @@ jobs:
             ${{ runner.os }}-buildx-
       - name: Prepare tags
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: ectobit/bond
           labels: |
