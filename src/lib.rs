@@ -121,13 +121,7 @@ async fn reconcile_source(source: Arc<Source>, ctx: Context<Data>) -> Result<Act
 
                 let dst_names: Vec<String> = (&s.destinations)
                     .iter()
-                    .map(|d| {
-                        format!(
-                            "{}/{}",
-                            d.namespace,
-                            d.name.as_ref().or(Some(&s.name)).unwrap()
-                        )
-                    })
+                    .map(|d| format!("{}/{}", d.namespace, d.name.as_ref().unwrap_or(&s.name)))
                     .collect();
 
                 ctx.get_ref()
