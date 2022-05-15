@@ -9,10 +9,13 @@ RUN cargo install cargo-strip
 
 COPY . /app
 
-RUN --mount=type=cache,target=/usr/local/cargo/registry,id=${TARGETPLATFORM} --mount=type=cache,target=/app/target,id=${TARGETPLATFORM} cargo build --release && cargo strip
+RUN --mount=type=cache,target=/usr/local/cargo/registry,id=${TARGETPLATFORM} --mount=type=cache,target=/app/target,id=${TARGETPLATFORM} \
+    cargo build --release && \
+    cargo strip && \
+    mv /app/target/release/bond /app
 
 FROM gcr.io/distroless/cc-debian11
 
-COPY --from=builder /app/target/release/bond /
+COPY --from=builder /app/bond /
 
 CMD ["./bond"]
