@@ -1,8 +1,9 @@
 [package]
 name = "bond"
 version = "0.1.1"
-edition = "2021"
+authors = ["Boban Acimovic <boban.acimovic@gmail.com>"]
 license = "BSD-2-Clause-Patent"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
