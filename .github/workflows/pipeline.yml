@@ -8,14 +8,12 @@ on:
 jobs:
   check:
     uses: ectobit/reusable-workflows/.github/workflows/rust-check.yaml@main
-    with:
-      hadolint: true
-      hadolint-ignore: DL3006
   build:
     uses: ectobit/reusable-workflows/.github/workflows/buildx.yaml@main
     needs: check
     with:
       image: ectobit/bond
+      hadolint-ignore: DL3006
     secrets:
       container-registry-username: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
       container-registry-password: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
