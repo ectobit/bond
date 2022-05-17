@@ -3,19 +3,17 @@ FROM rust:1.60.0 AS builder
 
 ARG TARGETPLATFORM
 
-WORKDIR /app
-
 RUN cargo install cargo-strip
 
-COPY . /app
+COPY . .
 
-RUN --mount=type=cache,target=/usr/local/cargo/registry,id=${TARGETPLATFORM} --mount=type=cache,target=/app/target,id=${TARGETPLATFORM} \
+RUN --mount=type=cache,target=/usr/local/cargo/registry,id=${TARGETPLATFORM} --mount=type=cache,target=/root/target,id=${TARGETPLATFORM} \
     cargo build --release && \
     cargo strip && \
-    mv /app/target/release/bond /app
+    mv /root/target/release/bond /root
 
 FROM gcr.io/distroless/cc-debian11
 
-COPY --from=builder /app/bond /
+COPY --from=builder /root/bond /
 
-CMD ["./bond"]
+ENTRYPOINT ["./bond"]
