@@ -70,7 +70,7 @@ dependencies = [
  "futures",
  "k8s-openapi 0.15.0",
  "kube",
- "kube-runtime",
+ "kube-runtime 0.73.0",
  "log",
  "schemars",
  "serde",
@@ -535,10 +535,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "977951a1d7dbce4c6f9c2cbed0711f568df9944010fafa88161a20f7e5163bd3"
 dependencies = [
  "k8s-openapi 0.14.0",
- "kube-client",
- "kube-core",
+ "kube-client 0.72.0",
+ "kube-core 0.72.0",
  "kube-derive",
- "kube-runtime",
+ "kube-runtime 0.72.0",
 ]
 
 [[package]]
@@ -560,8 +560,41 @@ dependencies = [
  "hyper-timeout",
  "jsonpath_lib",
  "k8s-openapi 0.14.0",
- "kube-core",
+ "kube-core 0.72.0",
  "openssl",
+ "pem",
+ "pin-project",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "thiserror",
+ "tokio",
+ "tokio-util",
+ "tower",
+ "tower-http",
+ "tracing",
+]
+
+[[package]]
+name = "kube-client"
+version = "0.73.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bcd54b663fef0f0bdc75666821262cd8bee03ffa45ded04cee0f07d2ba0288f0"
+dependencies = [
+ "base64",
+ "bytes",
+ "chrono",
+ "dirs-next",
+ "either",
+ "futures",
+ "http",
+ "http-body",
+ "hyper",
+ "hyper-timeout",
+ "jsonpath_lib",
+ "k8s-openapi 0.15.0",
+ "kube-core 0.73.0",
  "pem",
  "pin-project",
  "secrecy",
@@ -595,6 +628,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "kube-core"
+version = "0.73.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1eef68b0918b741d0cb20a54ffc06b197770584fa417180af4b398f848a381e6"
+dependencies = [
+ "chrono",
+ "form_urlencoded",
+ "http",
+ "json-patch",
+ "k8s-openapi 0.15.0",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
 name = "kube-derive"
 version = "0.72.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -619,7 +669,31 @@ dependencies = [
  "futures",
  "json-patch",
  "k8s-openapi 0.14.0",
- "kube-client",
+ "kube-client 0.72.0",
+ "parking_lot",
+ "pin-project",
+ "serde",
+ "serde_json",
+ "smallvec",
+ "thiserror",
+ "tokio",
+ "tokio-util",
+ "tracing",
+]
+
+[[package]]
+name = "kube-runtime"
+version = "0.73.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cce6c2a4ae58f1610bbf639280110035ab2ac624af112b5239851c793e1af0c0"
+dependencies = [
+ "ahash",
+ "backoff",
+ "derivative",
+ "futures",
+ "json-patch",
+ "k8s-openapi 0.15.0",
+ "kube-client 0.73.0",
  "parking_lot",
  "pin-project",
  "serde",
