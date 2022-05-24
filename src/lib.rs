@@ -5,7 +5,7 @@ use k8s_openapi::{api::core::v1::Secret, apimachinery::pkg::apis::meta::v1::Obje
 use kube::api::PostParams;
 use kube::{
     api::{Api, ListParams, Patch, PatchParams, Resource},
-    runtime::controller::{Action, Context, Controller},
+    runtime::controller::{Action, Controller},
     CustomResource,
 };
 use log::{debug, error, info, warn};
@@ -72,7 +72,7 @@ impl Client {
                     .run(
                         reconcile_source,
                         error_policy,
-                        Context::new(Data { client, state }),
+                        Arc::new(Data { client, state }),
                     )
                     .for_each(|res| async move {
                         match res {
@@ -95,7 +95,7 @@ impl Client {
                     .run(
                         reconcile_secret,
                         error_policy,
-                        Context::new(Data { client, state }),
+                        Arc::new(Data { client, state }),
                     )
                     .for_each(|res| async move {
                         if let Err(e) = res {
@@ -109,13 +109,13 @@ impl Client {
 }
 
 /// Controller triggers this whenever our main object or our children changed
-async fn reconcile_source(source: Arc<Source>, ctx: Context<Data>) -> Result<Action, Error> {
+async fn reconcile_source(source: Arc<Source>, ctx: Arc<Data>) -> Result<Action, Error> {
     match determine_action(&source) {
         BondAction::Create => {
             for s in &source.spec.secrets {
                 let src_name = format!("{}/{}", source.metadata.namespace.clone().unwrap(), s.name);
 
-                if ctx.get_ref().state.read().await.contains_key(&src_name) {
+                if ctx.state.read().await.contains_key(&src_name) {
                     continue;
                 }
 
@@ -124,15 +124,11 @@ async fn reconcile_source(source: Arc<Source>, ctx: Context<Data>) -> Result<Act
                     .map(|d| format!("{}/{}", d.namespace, d.name.as_ref().unwrap_or(&s.name)))
                     .collect();
 
-                ctx.get_ref()
-                    .state
-                    .write()
-                    .await
-                    .insert(src_name, dst_names);
+                ctx.state.write().await.insert(src_name, dst_names);
             }
 
             let sources = Api::<Source>::namespaced(
-                ctx.get_ref().client.clone(),
+                ctx.client.clone(),
                 &source.metadata.namespace.clone().unwrap(),
             );
 
@@ -144,7 +140,7 @@ async fn reconcile_source(source: Arc<Source>, ctx: Context<Data>) -> Result<Act
                 },
                 "kind": "Source",
                 "status": Status {
-                    ready: format!("{}/{}", 0,ctx.get_ref().state.read().await.len()),
+                    ready: format!("{}/{}", 0,ctx.state.read().await.len()),
                 }
             }));
 
@@ -159,7 +155,7 @@ async fn reconcile_source(source: Arc<Source>, ctx: Context<Data>) -> Result<Act
                 error!("patch status: {}", e);
             }
 
-            debug!("state: {:?}", ctx.get_ref().state.read().await);
+            debug!("state: {:?}", ctx.state.read().await);
 
             let finalizer: Value = json!({
                 "metadata": {
@@ -194,17 +190,17 @@ async fn reconcile_source(source: Arc<Source>, ctx: Context<Data>) -> Result<Act
 }
 
 /// Controller triggers this whenever our main object or our children changed
-async fn reconcile_secret(secret: Arc<Secret>, ctx: Context<Data>) -> Result<Action, Error> {
+async fn reconcile_secret(secret: Arc<Secret>, ctx: Arc<Data>) -> Result<Action, Error> {
     let src_name = format!(
         "{}/{}",
         secret.metadata.namespace.clone().unwrap(),
         secret.metadata.name.clone().unwrap()
     );
 
-    if ctx.get_ref().state.read().await.contains_key(&src_name) {
+    if ctx.state.read().await.contains_key(&src_name) {
         info!("found secret: {}", src_name);
 
-        for dst_secrets in ctx.get_ref().state.read().await.values() {
+        for dst_secrets in ctx.state.read().await.values() {
             for dst_secret in dst_secrets {
                 let mut ds = dst_secret.split('/');
                 let namespace = ds.next().unwrap().to_owned();
@@ -220,7 +216,7 @@ async fn reconcile_secret(secret: Arc<Secret>, ctx: Context<Data>) -> Result<Act
                     ..Default::default()
                 };
 
-                let sc = Api::<Secret>::namespaced(ctx.get_ref().client.clone(), &namespace);
+                let sc = Api::<Secret>::namespaced(ctx.client.clone(), &namespace);
                 match sc.create(&PostParams::default(), &new_secret).await {
                     Ok(_) => info!("secret {} reconciled to {}/{}", src_name, namespace, name),
                     Err(e) => error!("reconcile: {}", e),
@@ -233,7 +229,7 @@ async fn reconcile_secret(secret: Arc<Secret>, ctx: Context<Data>) -> Result<Act
 }
 
 /// The controller triggers this on reconcile errors
-fn error_policy(_error: &Error, _ctx: Context<Data>) -> Action {
+fn error_policy(_error: &Error, _ctx: Arc<Data>) -> Action {
     Action::requeue(Duration::from_secs(60))
 }
 

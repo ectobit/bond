@@ -8,7 +8,7 @@ version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fcb51a0695d8f838b1ee009b3fbf66bda078cd64590202a864a8f3e8c4315c47"
 dependencies = [
- "getrandom",
+ "getrandom 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "once_cell",
  "version_check",
 ]
@@ -45,7 +45,7 @@ version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b62ddb9cb1ec0a098ad4bbf9344d0713fa193ae1a80af55febcff2627b6a00c1"
 dependencies = [
- "getrandom",
+ "getrandom 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "instant",
  "rand",
 ]
@@ -68,7 +68,7 @@ version = "0.1.1"
 dependencies = [
  "env_logger",
  "futures",
- "k8s-openapi 0.15.0",
+ "k8s-openapi",
  "kube",
  "kube-runtime",
  "log",
@@ -327,10 +327,16 @@ name = "getrandom"
 version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9be70c98951c83b8d2f8f60d7065fa6d5146873094452a1008da8c2f1e4205ad"
+replace = "getrandom 0.2.6 (git+https://github.com/rust-random/getrandom)"
+
+[[package]]
+name = "getrandom"
+version = "0.2.6"
+source = "git+https://github.com/rust-random/getrandom#9e2c896e653611188df9d835d2570546e2bf1d67"
 dependencies = [
  "cfg-if",
  "libc",
- "wasi 0.10.2+wasi-snapshot-preview1",
+ "wasi",
 ]
 
 [[package]]
@@ -361,9 +367,9 @@ dependencies = [
 
 [[package]]
 name = "http-body"
-version = "0.4.4"
+version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1ff4f84919677303da5f147645dbea6b1881f368d03ac84e1dc09031ebd7b2c6"
+checksum = "d5f38f16d184e36f2408a55281cd658ecbd3ca05cce6d6510a176eca393e26d1"
 dependencies = [
  "bytes",
  "http",
@@ -502,20 +508,6 @@ dependencies = [
 
 [[package]]
 name = "k8s-openapi"
-version = "0.14.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0489fc937cc7616a9abfa61bf39c250d7e32e1325ef028c8d9278dd24ea395b3"
-dependencies = [
- "base64",
- "bytes",
- "chrono",
- "serde",
- "serde-value",
- "serde_json",
-]
-
-[[package]]
-name = "k8s-openapi"
 version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2ae2c04fcee6b01b04e3aadd56bb418932c8e0a9d8a93f48bc68c6bdcdb559d"
@@ -530,11 +522,11 @@ dependencies = [
 
 [[package]]
 name = "kube"
-version = "0.72.0"
+version = "0.73.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "977951a1d7dbce4c6f9c2cbed0711f568df9944010fafa88161a20f7e5163bd3"
+checksum = "60f11922081d37d1af75ae6b6b73b0b170ad169197c7a4a30e94e805ceff2a64"
 dependencies = [
- "k8s-openapi 0.14.0",
+ "k8s-openapi",
  "kube-client",
  "kube-core",
  "kube-derive",
@@ -543,9 +535,9 @@ dependencies = [
 
 [[package]]
 name = "kube-client"
-version = "0.72.0"
+version = "0.73.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "625e8a89c79dd4e590217838f32274ccbb0f4ecc1db181f84aba3df635fca729"
+checksum = "bcd54b663fef0f0bdc75666821262cd8bee03ffa45ded04cee0f07d2ba0288f0"
 dependencies = [
  "base64",
  "bytes",
@@ -559,7 +551,7 @@ dependencies = [
  "hyper-openssl",
  "hyper-timeout",
  "jsonpath_lib",
- "k8s-openapi 0.14.0",
+ "k8s-openapi",
  "kube-core",
  "openssl",
  "pem",
@@ -578,15 +570,15 @@ dependencies = [
 
 [[package]]
 name = "kube-core"
-version = "0.72.0"
+version = "0.73.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0491dcd9adca79a96c63404aa978137f5fe1d3db5dcb6e5c0b073f915dbdd49d"
+checksum = "1eef68b0918b741d0cb20a54ffc06b197770584fa417180af4b398f848a381e6"
 dependencies = [
  "chrono",
  "form_urlencoded",
  "http",
  "json-patch",
- "k8s-openapi 0.14.0",
+ "k8s-openapi",
  "once_cell",
  "schemars",
  "serde",
@@ -596,9 +588,9 @@ dependencies = [
 
 [[package]]
 name = "kube-derive"
-version = "0.72.0"
+version = "0.73.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f19faefec284e5eec6680c74cd54d29823f38f0cf8811d54265877e1963996ad"
+checksum = "3a92635af3079b229cc54fe6ba82349e1e23f1a53487f67fcbdf51db644b13eb"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -609,16 +601,16 @@ dependencies = [
 
 [[package]]
 name = "kube-runtime"
-version = "0.72.0"
+version = "0.73.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bb67002cbacd6cd99d1b1d0890785a84b6408158972f2561317bc4cdc06c981e"
+checksum = "cce6c2a4ae58f1610bbf639280110035ab2ac624af112b5239851c793e1af0c0"
 dependencies = [
  "ahash",
  "backoff",
  "derivative",
  "futures",
  "json-patch",
- "k8s-openapi 0.14.0",
+ "k8s-openapi",
  "kube-client",
  "parking_lot",
  "pin-project",
@@ -697,7 +689,7 @@ checksum = "713d550d9b44d89174e066b7a6217ae06234c10cb47819a88290d2b353c31799"
 dependencies = [
  "libc",
  "log",
- "wasi 0.11.0+wasi-snapshot-preview1",
+ "wasi",
  "windows-sys",
 ]
 
@@ -732,9 +724,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.11.0"
+version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b10983b38c53aebdf33f542c6275b0f58a238129d00c4ae0e6fb59738d783ca"
+checksum = "7709cef83f0c1f58f666e746a08b21e0085f7440fa6a29cc194d68aac97a4225"
 
 [[package]]
 name = "openssl"
@@ -911,7 +903,7 @@ version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d34f1408f55294453790c48b2f1ebbb1c5b4b7563eb1f418bcfcfdbb06ebb4e7"
 dependencies = [
- "getrandom",
+ "getrandom 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -929,16 +921,16 @@ version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b033d837a7cf162d7993aded9304e30a83213c648b6e389db233191f891e5c2b"
 dependencies = [
- "getrandom",
+ "getrandom 0.2.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "redox_syscall",
  "thiserror",
 ]
 
 [[package]]
 name = "regex"
-version = "1.5.5"
+version = "1.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a11647b6b25ff05a515cb92c365cec08801e83423a235b51e231e1808747286"
+checksum = "d83f127d94bdbcda4c8cc2e50f6f84f4b611f69c902699ca385a39c3a75f9ff1"
 dependencies = [
  "aho-corasick",
  "memchr",
@@ -947,9 +939,9 @@ dependencies = [
 
 [[package]]
 name = "regex-syntax"
-version = "0.6.25"
+version = "0.6.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f497285884f3fcff424ffc933e56d7cbca511def0c9831a7f9b5f6153e3cc89b"
+checksum = "49b3de9ec5dc0a3417da371aab17d729997c15010e7fd24ff707773a33bddb64"
 
 [[package]]
 name = "ryu"
@@ -1328,12 +1320,6 @@ dependencies = [
  "log",
  "try-lock",
 ]
-
-[[package]]
-name = "wasi"
-version = "0.10.2+wasi-snapshot-preview1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd6fbd9a79829dd1ad0cc20627bf1ed606756a7f77edff7b66b7064f9cb327c6"
 
 [[package]]
 name = "wasi"
