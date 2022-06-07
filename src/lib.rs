@@ -240,13 +240,13 @@ enum BondAction {
 }
 
 fn determine_action(source: &Source) -> BondAction {
-    return if source.meta().deletion_timestamp.is_some() {
+    if source.meta().deletion_timestamp.is_some() {
         BondAction::Delete
     } else if source.meta().finalizers.is_none() {
         BondAction::Create
     } else {
         BondAction::NoOp
-    };
+    }
 }
 
 // Data we want access to in error/reconcile calls
