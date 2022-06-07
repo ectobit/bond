@@ -18,33 +18,6 @@ use tokio::{
     time::{self, Duration},
 };
 
-#[derive(Debug, Error)]
-pub enum Error {
-    #[error("Failed to create ConfigMap: {0}")]
-    ConfigMapCreationFailed(#[source] kube::Error),
-    #[error("MissingObjectKey: {0}")]
-    MissingObjectKey(&'static str),
-}
-
-#[derive(CustomResource, Debug, Clone, Deserialize, Serialize, JsonSchema)]
-#[kube(group = "bond.ectobit.com", version = "v1alpha1", kind = "Source")]
-#[kube(shortname = "src", status = "Status", namespaced)]
-pub struct SourceSpec {
-    secrets: Vec<SourceItem>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema)]
-struct SourceItem {
-    name: String,
-    destinations: Vec<DestinationItem>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema)]
-struct DestinationItem {
-    namespace: String,
-    name: Option<String>,
-}
-
 #[derive(Debug, Clone, Deserialize, Serialize, JsonSchema)]
 pub struct Status {
     ready: String,
@@ -253,4 +226,32 @@ fn determine_action(source: &Source) -> BondAction {
 struct Data {
     client: kube::Client,
     state: Arc<RwLock<HashMap<String, Vec<String>>>>,
+}
+
+#[derive(CustomResource, Debug, Clone, Deserialize, Serialize, JsonSchema)]
+#[kube(group = "bond.ectobit.com", version = "v1alpha1", kind = "Source")]
+#[kube(shortname = "src", status = "Status", namespaced)]
+pub struct SourceSpec {
+    secrets: Vec<SourceItem>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema)]
+struct SourceItem {
+    name: String,
+    destinations: Vec<DestinationItem>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, JsonSchema)]
+struct DestinationItem {
+    namespace: String,
+    name: Option<String>,
+}
+
+#[non_exhaustive]
+#[derive(Debug, Error)]
+pub enum Error {
+    #[error("Failed to create ConfigMap: {0}")]
+    ConfigMapCreationFailed(#[source] kube::Error),
+    #[error("MissingObjectKey: {0}")]
+    MissingObjectKey(&'static str),
 }
