@@ -92,7 +92,7 @@ async fn reconcile_source(source: Arc<Source>, ctx: Arc<Data>) -> Result<Action,
                     continue;
                 }
 
-                let dst_names: Vec<String> = (&s.destinations)
+                let dst_names: Vec<String> = (s.destinations)
                     .iter()
                     .map(|d| format!("{}/{}", d.namespace, d.name.as_ref().unwrap_or(&s.name)))
                     .collect();
