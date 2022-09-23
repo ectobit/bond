@@ -202,7 +202,7 @@ async fn reconcile_secret(secret: Arc<Secret>, ctx: Arc<Data>) -> Result<Action,
 }
 
 /// The controller triggers this on reconcile errors
-fn error_policy(_error: &Error, _ctx: Arc<Data>) -> Action {
+fn error_policy<T>(_object: Arc<T>, _error: &Error, _ctx: Arc<Data>) -> Action {
     Action::requeue(Duration::from_secs(60))
 }
 
